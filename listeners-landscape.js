@@ -1550,12 +1550,12 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
     
         var endAge = localStorage.getItem('endAge');
         if (incomeType === 'Partner') {
-            currentAgePartner = localStorage.getItem('currentAgePartner');
-            currentAge = localStorage.getItem('currentAge');
-            endAge = endAge + currentAgePartner - currentAge;
+            var currentAgePartner = localStorage.getItem('currentAgePartner');
+            var currentAge = localStorage.getItem('currentAge');
+            endAge = parseInt(endAge) + parseInt(currentAgePartner) - parseInt(currentAge);
         }
     
-        // Filter the cashFlowData based on retirementAge
+        // Filter the cashFlowData based on retirementAge and endAge
         var retirementData = cashFlowData.filter(data => data.age >= retirementAge && data.age <= endAge);
     
         // Check if there is data after filtering
@@ -1566,14 +1566,15 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
     
         // Extract data for the chart from the filtered retirementData
         var ages = retirementData.map(data => data.age);
-        var netPensionWithdrawals = retirementData.map(data => Math.round(frequencyMultiplier * (data.withdrawal  - data.taxFreePortion ) / 12));
-        //var netPensionWithdrawals = retirementData.map(data => Math.round(frequencyMultiplier * (data.withdrawal  ) / 12));
+        var netPensionWithdrawals = retirementData.map(data => Math.round(frequencyMultiplier * (data.withdrawal - data.taxFreePortion) / 12));
         var taxFreePortion = retirementData.map(data => Math.round(frequencyMultiplier * data.taxFreePortion / 12));
         var ISADrawings = retirementData.map(data => Math.round(frequencyMultiplier * data.ISADrawings / 12));
         var statePensions = retirementData.map(data => Math.round(frequencyMultiplier * data.statePension / 12));
         var dbPensions = retirementData.map(data => Math.round(frequencyMultiplier * data.dbPension / 12));
         var annuityNet = retirementData.map(data => Math.round(frequencyMultiplier * data.annuityNet / 12));
         var shortfall = retirementData.map(data => Math.round(frequencyMultiplier * Math.max(0, data.shortfall) / 12));
+        // NEW: Extract Other Income (assumed stored as otherIncomeNet)
+        var otherIncomes = retirementData.map(data => Math.round(frequencyMultiplier * (data.otherIncomeNet || 0) / 12));
     
         // If incomeType is 'Your' or 'Partner', set shortfall to zero and fix chart resizing
         if (incomeType === 'Your' || incomeType === 'Partner') {
@@ -1582,19 +1583,29 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
         } 
     
         // Calculate the guaranteed income percentage.
-        // Guaranteed income is the sum of state pension, defined benefit pension, and annuity.
-        // Non guaranteed income is the sum of defined contribution pension withdrawals and ISA withdrawals.
+        // Guaranteed income: state pension, DB pension, and annuity.
+        // Non-guaranteed income: pension withdrawals, tax-free portion, ISA withdrawals, and Other Income.
         var totalGuaranteed = statePensions.reduce((sum, val) => sum + val, 0)
                              + dbPensions.reduce((sum, val) => sum + val, 0)
                              + annuityNet.reduce((sum, val) => sum + val, 0);
         var totalNonGuaranteed = netPensionWithdrawals.reduce((sum, val) => sum + val, 0)
                                 + taxFreePortion.reduce((sum, val) => sum + val, 0)
-                                + ISADrawings.reduce((sum, val) => sum + val, 0);
+                                + ISADrawings.reduce((sum, val) => sum + val, 0)
+                                + otherIncomes.reduce((sum, val) => sum + val, 0);
         var totalIncome = totalGuaranteed + totalNonGuaranteed;
         var guaranteedPercentage = totalIncome > 0 ? (totalGuaranteed / totalIncome) * 100 : 0;
     
         // Determine the maximum value in the dataset for dynamic step sizing
-        var allIncomeData = [...statePensions, ...dbPensions, ...netPensionWithdrawals, ...ISADrawings, ...annuityNet, ...shortfall];
+        var allIncomeData = [
+            ...statePensions, 
+            ...dbPensions, 
+            ...netPensionWithdrawals, 
+            ...taxFreePortion, 
+            ...ISADrawings, 
+            ...annuityNet, 
+            ...otherIncomes,
+            ...shortfall
+        ];
         var maxValue = Math.max(...allIncomeData);
         var stepSize = calculateStepSizeIncome(maxValue);
     
@@ -1625,22 +1636,10 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
         // Determine heading font size based on window width
         var headingFontSize = window.innerWidth < 1366 ? 14 : 20;
     
-        // Code to retain existing scale if required
+        // Retain existing scale if needed
         let existingScale = null;
-        /* if (dontResizeChart && window.myIncomeChart) {
-            const xScale = window.myIncomeChart.scales['x'];
-            const yScale = window.myIncomeChart.scales['y'];
-            if (xScale && yScale) {
-                existingScale = {
-                    xMin: xScale.min,
-                    xMax: xScale.max,
-                    yMin: yScale.min,
-                    yMax: yScale.max
-                };
-            }
-        } */
     
-        // Destroy existing chart instance if it exists to avoid duplication
+        // Destroy existing chart instance if it exists
         if (window.myIncomeChart) {
             window.myIncomeChart.destroy();
         }
@@ -1651,21 +1650,27 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
             data: {
                 labels: ages,
                 datasets: [
-                    {
+                    /* {
                         label: 'State Pension',
                         data: statePensions,
-                        backgroundColor: '#4CAF50' // Green
+                        backgroundColor: '#218A25' // Green
                     },
                     {
                         label: 'Defined Benefit Pension',
                         data: dbPensions,
-                        backgroundColor: '#9C27B0' // Purple
+                        backgroundColor: '#27C22C' // Purple
+                    },
+                    {
+                        label: 'Other Income',
+                        data: otherIncomes,
+                        backgroundColor: '#67FA4D' // Brown
                     },
                     {
                         label: 'Annuity Payments',
                         data: annuityNet,
                         backgroundColor: '#005688' // Teal
                     },
+                    
                     {
                         label: 'Pension Withdrawals',
                         data: netPensionWithdrawals,
@@ -1674,17 +1679,59 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                     {
                         label: 'Tax Free Portion',
                         data: taxFreePortion,
-                        backgroundColor: '#64B5F6' // Blue
+                        backgroundColor: '#64B5F6' // Light Blue
                     },
                     {
                         label: 'ISA Withdrawals',
                         data: ISADrawings,
-                        backgroundColor: '#FF9800' // Orange
+                        backgroundColor: '#F1D302' // Orange
                     },
+                   
                     {
                         label: 'Shortfall',
                         data: shortfall,
                         backgroundColor: '#FF0000' // Red
+                    } */
+                    {
+                        label: 'State Pension',
+                        data: statePensions,
+                        backgroundColor: '#5CB827' 
+                    },
+                    {
+                        label: 'Defined Benefit Pension',
+                        data: dbPensions,
+                        backgroundColor: '#B32AF7'//'#9C27B0' 
+                    },
+                    {
+                        label: 'Annuity Payments',
+                        data: annuityNet,
+                        backgroundColor: '#005688' 
+                    },
+                    {
+                        label: 'Other Income',
+                        data: otherIncomes,
+                        backgroundColor: '#F2CC8F' //'#E1EB23' 
+                    },
+                    {
+                        label: 'Pension Withdrawals',
+                        data: netPensionWithdrawals,
+                        backgroundColor: '#2196F3' 
+                    },
+                    {
+                        label: 'Tax Free Portion',
+                        data: taxFreePortion,
+                        backgroundColor: '#64B5F6' 
+                    },
+                    {
+                        label: 'ISA Withdrawals',
+                        data: ISADrawings,
+                        backgroundColor: '#FF9800' 
+                    },
+                   
+                    {
+                        label: 'Shortfall',
+                        data: shortfall,
+                        backgroundColor: '#FF0000' 
                     }
                 ]
             },
@@ -1708,13 +1755,13 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                         stacked: true,
                         title: {
                             display: true,
-                            text: '' // Removed (£) symbol
+                            text: '' // No currency symbol in title
                         },
                         beginAtZero: true,
                         ticks: {
                             stepSize: stepSize,
                             maxTicksLimit: 8,
-                            callback: function(value, index, ticks) {
+                            callback: function(value) {
                                 return '£' + formatNumber(value, 'k');
                             }
                         },
@@ -1726,13 +1773,12 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                     title: {
                         display: true,
                         text: [
-                            heading, // Existing heading
-                            `Total Income Over All Ages: £${formatNumber(totalIncome, 'number')}` // Second heading
-                            /* `Total Guaranteed: £${formatNumber(totalGuaranteed, 'number')} | Total Non-Guaranteed: £${formatNumber(totalNonGuaranteed, 'number')}`  */
+                            heading,
+                            `Total Income Over All Ages: £${formatNumber(totalIncome, 'number')}`
                         ],
                         font: {
                             size: headingFontSize,
-                            family: 'Arial',
+                            family: 'Arial'
                         },
                         padding: {
                             top: 5,
@@ -1743,7 +1789,6 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                         display: true,
                         position: 'top',
                         labels: {
-                            // Only include legend items for datasets with at least one non-zero value
                             filter: function(legendItem, chartData) {
                                 const dataset = chartData.datasets[legendItem.datasetIndex];
                                 return dataset.data.some(value => value !== 0);
@@ -1764,7 +1809,6 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                                 return label;
                             },
                             footer: function(context) {
-                                // Sum only values greater than zero
                                 var total = context.reduce((sum, item) => {
                                     return sum + (item.parsed.y > 0 ? item.parsed.y : 0);
                                 }, 0);
@@ -1776,10 +1820,10 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
             }
         });
     
-        // Helper functions defined inside the chart function
+        // Helper functions
         function formatNumber(value, formatType) {
             if (formatType === 'k') {
-                if (value >= 10000) { // Only add 'k' for values >= £10,000
+                if (value >= 10000) {
                     return (value / 1000).toFixed(0) + 'k';
                 }
                 return new Intl.NumberFormat('en-GB').format(value);
@@ -1821,14 +1865,11 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
             return 250000;
         }
     
-        // Return the guaranteed income percentage
-        // Guaranteed income = state pension + defined benefit pension + annuity
-        // Non guaranteed income = defined contribution pension withdrawals + ISA withdrawals
-        // Shortfall is not included.
-        return {totalIncome: totalIncome, 
-                totalNonGuaranteed: totalNonGuaranteed,
-               guaranteedPercentage: guaranteedPercentage,
-        }
+        return {
+            totalIncome: totalIncome, 
+            totalNonGuaranteed: totalNonGuaranteed,
+            guaranteedPercentage: guaranteedPercentage
+        };
     }
     
     
