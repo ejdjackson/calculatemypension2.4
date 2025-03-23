@@ -1,0 +1,565 @@
+.hidden {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    transform: translateY(-50px) !important;
+    position: absolute !important;
+    transition: opacity 1s ease, transform 1s ease !important;
+    display: none;
+}
+
+.visible {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    position: relative; /* Adjust as needed */
+}
+
+.navbar {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .navbar-nav .nav-link {
+    position: relative;
+    text-decoration: none; /* Remove default underline */
+    padding-bottom: 5px; /* Space for the underline */
+  }
+  
+  .navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 0%;
+    height: 2px;
+    background-color: #1380d9; /* Change this to your desired color */
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+  }
+  
+  .navbar-nav .nav-link:hover::after {
+    width: 100%;
+    left: 0;
+  }
+
+.chart-container {
+    margin-top: 20px;
+}
+
+
+.custom-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 22px; /* Increases thumb width */
+    height: 22px; /* Increases thumb height */
+    background: #2196F3; /* Thumb color */
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -6px;
+}
+
+/* Firefox */
+.custom-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #2196F3;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.big-checkbox {
+    width: 25px; /* Increases width */
+    height: 25px; /* Increases height */
+    cursor: pointer; /* Ensures easy clicking */
+}
+
+.three-way-toggle {
+display: flex;
+justify-content: space-between;
+align-items: center;
+/* width: 410px; */
+/* width: fit-content; */
+height: 55px;
+background-color: #f0f0f0;
+border-radius: 10px;
+/* padding: 5px; */
+padding: 8px;
+position: relative;
+margin-top: 15px;
+margin-bottom: 20px;
+/* margin-left: 20px; */
+max-width: 100%; 
+font-size: 0.8rem; 
+
+}
+
+.three-way-toggle input[type="radio"] {
+display: none;
+}
+
+.three-way-toggle label {
+flex: 1;
+text-align: center;
+width: fit-content;
+padding: 10px;
+cursor: pointer;
+transition: background-color 0.3s ease, color 0.3s ease;
+border-radius: 10px;
+
+}
+
+.three-way-toggle label:hover {
+background-color: #e0e0e0;
+}
+
+.three-way-toggle input[type="radio"]:checked + label {
+background-color:  #3e8e41;
+color: white;
+}
+
+/* Selected styles for Option 1 */
+.three-way-toggle input#option3:checked ~ .three-way-toggle {
+background-color: #4CAF50; /* Green background for Option 1 */
+}
+
+.three-way-toggle input#option3:checked + label {
+background-color: #4CAF50; /* Green label for Option 1 */
+color: white;
+}
+
+/* Selected styles for Option 2 */
+.three-way-toggle input#option1:checked ~ .three-way-toggle {
+background-color: #FF9800; /* Orange background for Option 2 */
+}
+
+.three-way-toggle input#option1:checked + label {
+background-color: #FF9800; /* Orange label for Option 2 */
+color: white;
+}
+
+/* Selected styles for Option 3 */
+.three-way-toggle input#option2:checked ~ .three-way-toggle {
+background-color: #2196F3; /* Blue background for Option 3 */
+}
+
+.three-way-toggle input#option2:checked + label {
+background-color: #2196F3; /* Blue label for Option 3 */
+color: white;
+}
+
+.result-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.result-label {
+    
+    margin-right: 10px;
+}
+.result-output {
+    
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    border-radius: 5px;
+    width: 35%;
+    text-align: right;
+    background-color: #f9f9f9;
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Standardize the dropdown */
+select {
+    font-size: 0.8rem; /* Match the label font size */
+    padding: 0.25rem 0.5rem; /* Adjust padding for a compact look */
+    height: 2rem; /* Explicit height for consistency */
+    border: 1px solid #6a6a6a; /* Match Bootstrap input borders */
+    border-radius: 4px; /* Rounded corners for a consistent look */
+    appearance: none; /* Remove native dropdown arrow (use custom if desired) */
+    background-color: #e1e1e1; /* Ensure a consistent background */
+    color: #212529; /* Text color */
+}
+
+/* Optional: Add a consistent hover effect */
+select:hover {
+    border-color: #80bdff; /* Highlight border on hover */
+    outline: none;
+}
+
+/* Optional: Style the dropdown arrow */
+select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Match Bootstrap focus effect */
+}
+
+.result-output {
+    width: 120px; /* Fixed width for all output fields */
+    text-align: right; /* Align text to the right for numbers */
+    white-space: nowrap; /* Prevent wrapping of content */
+    overflow: hidden; /* Hide overflowing content */
+    display: inline-block; /* Ensure it respects the fixed width */
+}
+
+
+/* Disclaimer Styling */
+.disclaimer {
+    
+    padding: 10px; /* Adds padding inside the disclaimer box */
+    background-color: #f9f9f9; /* Light grey background */
+    border: 2px solid #000000; /* Grey left border for emphasis */
+    font-size: 0.7em; /* Slightly smaller font size */
+    color: #555; /* Dark grey text color */
+    border-radius: 5px;
+    max-width: 90%;
+    margin-bottom: 2%;
+}
+
+.disclaimer p {
+    margin: 0; /* Removes default paragraph margins */
+}
+
+
+/* General Table Section Styling */
+.table-section {
+    width: 100%;
+    /* margin: 20px auto; */
+}
+
+.table-section h3 {
+    color: white;
+    text-shadow: 4px 4px 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.table-section h3:hover {
+    text-decoration: underline; /* Optional: adds underline effect on hover */
+}
+
+.table-section .arrow {
+    font-size: 1em;
+    margin-left: 10px;
+    transition: transform 0.5s ease;
+}
+
+.table-section .arrow.open {
+    transform: rotate(90deg); /* Rotates arrow on toggle */
+}
+
+/* Table Container */
+.table-container {
+    
+    overflow: hidden; /* Prevents content from spilling */
+    transition: max-height 0.5s ease-in-out;
+}
+
+.table-container.open {
+    max-height: 1000px; /* Adjust to fit content height */
+}
+
+/* Responsive Table Styling */
+.table-responsive {
+    overflow-x: auto; /* Horizontal scrolling for smaller screens */
+    overflow-y: auto;
+    max-height: 500px;
+    margin: 20px 0;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+}
+
+table thead {
+    background-color: #42a5f5; /* Light blue header */
+    color: #ffffff; /* White text */
+    font-size: small;
+    border-top: 1px solid #000000;
+    border-left: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+table thead th {
+    position: sticky;
+    top: 0; /* Fix the header at the top */
+    z-index: 2; /* Ensure the header stays above the table rows */
+    padding: 10px;
+    
+    border: 2px solid #ddd; /* Header border */
+    box-shadow: 0px 2px 5px rgba(211, 211, 211, 0.1); /* Optional shadow for clarity */
+    background-color: #42a5f5; /* Ensure background color for sticky headers */
+    border: 1px solid #000000; /* Cell borders */
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #fbf8f8; /* Light grey */
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #efeeee; /* Slightly darker grey */
+}
+
+table tbody tr:hover {
+    background-color: #f7ff56; /* Highlight row on hover */
+}
+
+table th,
+table td {
+    padding: 10px;
+    border: 1px solid #000000;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+/* Info Icons and Popups */
+.info-icon {
+    position: relative;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: #ffffff;
+    color: #006699;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 0.8em;
+    line-height: 18px;
+    cursor: pointer;
+}
+
+.info-popup {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    width: 250px;
+    background-color: #42a5f5;
+    text-align: left;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: 0.9em;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    top: 150px; /* Position below the icon */
+    left: 0;
+}
+
+.info-icon:hover + .info-popup,
+.info-popup:hover {
+    visibility: visible;
+    opacity: 1;
+}
+
+.info-popup .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+
+.info-popup .close-btn:hover {
+    color: #000000;
+}
+
+
+.hidden-column {
+    width: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out; /* Smooth sliding */
+}
+
+.visible-column {
+    width: 25%; /* Adjust the width as needed */
+    padding: 15px; /* Optional padding */
+    transition: all 0.3s ease-in-out; /* Smooth sliding */
+}
+
+/* Partner-specific hidden state */
+.partner-hidden {
+    max-height: 0; /* Collapse the element */
+    opacity: 0; /* Fully transparent */
+    overflow: hidden; /* Prevent content overflow */
+    transition: max-height 0.8s ease, opacity 0.8s ease; /* Smooth animation */
+}
+
+/* Partner-specific visible state */
+.partner-visible {
+    max-height: 500px; /* Set to a high value to accommodate content */
+    opacity: 1; /* Fully visible */
+    transition: max-height 0.8s ease, opacity 0.8s ease; /* Smooth animation */
+}
+
+
+
+.flex-7 {
+    flex: 10; /* Adjust the main column to take up more space when side columns are hidden */
+}
+
+
+.hero {
+    height: 35vh; /* Reduced to half */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .overlay {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 4rem 2rem; /* Adjusted padding for reduced height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+  }
+  
+  .overlay::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('Images/Smiley Planning.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: -1;
+    filter: blur(2px); /* Optional: Adds a slight blur effect */
+  }
+  
+
+.width-85 {
+    width: 85%;
+}
+
+.width-100 {
+    width: 100%;
+}
+
+.custom-circle-button-phone {
+    font-size: 0.5rem;
+    width: 20px;       
+    height: 20px;      
+    display: flex;     
+    justify-content: center;
+    align-items: center;
+    padding: 0;        
+    line-height: 1;    
+    font-size: 1rem;   
+    font-weight: bold;
+    color: #000000;
+    border-color: #000000;
+    border-radius: 80%; /* Ensure a perfect circle */
+    
+}
+
+.custom-circle-button {
+    font-size: 0.5rem;
+    width: 18px;       
+    height: 18px;      
+    display: flex;     
+    justify-content: center;
+    align-items: center;
+    padding: 0;        
+    line-height: 1;    
+    font-size: 1rem;   
+    font-weight: bold;
+   
+    border-radius: 80%; /* Ensure a perfect circle */
+    
+}
+
+#leftColumn {
+    position: sticky;
+    top: 0; /* Keeps the columns fixed relative to the top of the viewport */
+    height: 100vh; /* Ensures the columns occupy the full viewport height */
+    overflow-y: auto; /* Allows scrolling within the columns if needed */
+    z-index: 1; /* Keeps them above the scrollable graph content */
+    flex: 3;
+}
+
+#rightColumn {
+    position: sticky;
+    top: 0; 
+    height: 100vh; 
+    overflow-y: auto; 
+    z-index: 1; 
+    flex: 0;
+}
+
+#mainColumn {
+    overflow-y: auto; /* Enables scrolling within the main content area */
+    height: 100vh; /* Ensures it matches the viewport height */
+    flex: 9;
+}
+
+
+.rise-up {
+    opacity: 0; /* Start hidden */
+    transform: translateY(50px); /* Start 50px below */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.rise-up.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.output-value {
+    font-size: 0.75rem;
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+}
+/* Smooth height transition */
+.accordion-item {
+    overflow: hidden;
+    transition: height 0.3s ease;
+  }
+  
+  .accordion-item.hidden {
+    height: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .accordion-item.visible {
+    height: auto;
+    opacity: 1;
+    visibility: visible;
+  }
+
+
+/* For devices in landscape mode */
+@media screen and (orientation: landscape) {
+   /* £££££ ;-) */
+}
+  
+/* For devices in portrait mode */
+@media screen and (orientation: portrait) {
+
+}
+  
+@media (max-width: 768px) {
+    .navbar-brand img {
+        width: 80px; /* Reduce logo size */
+    }
+    .navbar-brand span {
+        font-size: medium; /* Reduce title size */
+    }
+}
