@@ -2918,8 +2918,6 @@ setupSliderListeners();
     
         displayRetirementIncomeCashFlowTable(cashFlowData, retirementAge, retirementIncomeTableBody);
             
-        
-
         displayPensionFundCashFlowTable(cashFlowData,pensionFundCashFlowTableBody);
         displayISACashFlowTable(cashFlowData, ISACashFlowTableBody);
     
@@ -4105,10 +4103,10 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
     
     
     function plotTaxBreakdownChart(
-        cashFlowData, 
-        frequencyMultiplier, 
-        applyInflationAdjustment, 
-        prefix, 
+        cashFlowData,
+        frequencyMultiplier,
+        applyInflationAdjustment,
+        prefix,
         phoneFormat,
         retirementAge,
         planAsCouple,
@@ -4121,20 +4119,18 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
         }
     
         // Determine the appropriate canvas context based on phoneFormat
-        var ctx =  document.getElementById('taxBySourceChartTablet').getContext('2d') ;
+        var ctx = document.getElementById('taxBySourceChartTablet').getContext('2d');
     
         var endAge = localStorage.getItem('endAge');
         if (incomeType === 'PartnerTax') {
-            currentAgePartner = localStorage.getItem('currentAgePartner');
-            currentAge = localStorage.getItem('currentAge');
-            endAge = endAge + currentAgePartner - currentAge;
+            var currentAgePartner = localStorage.getItem('currentAgePartner');
+            var currentAge = localStorage.getItem('currentAge');
+            endAge = parseInt(endAge) + parseInt(currentAgePartner) - parseInt(currentAge);
         }
     
-        // Filter the cashFlowData based on retirementAge
-        //var retirementData = cashFlowData.filter(data => data.age >= retirementAge );
+        // Filter the cashFlowData based on retirementAge and endAge
         var retirementData = cashFlowData.filter(data => data.age >= retirementAge && data.age <= endAge);
     
-       
         // Check if there is data after filtering
         if (retirementData.length === 0) {
             console.warn(`No tax data available for retirement age ${retirementAge} or beyond.`);
@@ -4147,43 +4143,40 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
         var dbPensionTaxes = retirementData.map(data => Math.round(frequencyMultiplier * data.dbPensionTax / 12));
         var pensionWithdrawalTaxes = retirementData.map(data => Math.round(frequencyMultiplier * data.taxPaid / 12));
         var annuityTaxes = retirementData.map(data => Math.round(frequencyMultiplier * data.annuityTax / 12));
+        var otherIncomeTaxes = retirementData.map(data => Math.round(frequencyMultiplier * (data.otherIncomeTax || 0) / 12));
         var headingFontSize = window.innerWidth < 1366 ? 14 : 20;
-
-         // Calculate total tax paid
-        var totalTax = [...statePensionTaxes, ...dbPensionTaxes, ...pensionWithdrawalTaxes, ...annuityTaxes].reduce((sum, tax) => sum + (tax || 0), 0);
     
-        // Adjust data based on inflation if necessary
-        if (applyInflationAdjustment) {
-            // If inflation adjustment affects tax calculations, adjust here.
-            // Currently, the same calculations are applied, but this block is reserved for future adjustments.
-            statePensionTaxes = retirementData.map(data => Math.round(frequencyMultiplier * data.statePensionTax / 12));
-            dbPensionTaxes = retirementData.map(data => Math.round(frequencyMultiplier * data.dbPensionTax / 12));
-            pensionWithdrawalTaxes = retirementData.map(data => Math.round(frequencyMultiplier * data.taxPaid / 12));
-            annuityTaxes = retirementData.map(data => Math.round(frequencyMultiplier * data.annuityTax / 12));
-        }
+        // Calculate total tax paid
+        var totalTax = [
+            ...statePensionTaxes,
+            ...dbPensionTaxes,
+            ...pensionWithdrawalTaxes,
+            ...annuityTaxes,
+            ...otherIncomeTaxes
+        ].reduce((sum, tax) => sum + (tax || 0), 0);
     
         // Heading for the chart
         var titlePrefix = planAsCouple ? "Combined" : "";
-        var headingSuffix = " (Projected Future Values)";
-        if (applyInflationAdjustment) {
-            headingSuffix = " (In Today's Money)";
-        }
+        var headingSuffix = applyInflationAdjustment ? " (In Today's Money)" : " (Projected Future Values)";
         var heading = `${titlePrefix}${prefix} Annual Tax Breakdown${headingSuffix}`;
     
-        // Append retirement age to the heading for clarity
-        //heading += ` from Age ${retirementAge}`;
-    
-        // Destroy the existing chart instance if it exists to avoid duplication
+        // Destroy existing chart instance if it exists
         if (window.myTaxChart) {
             window.myTaxChart.destroy();
         }
     
-        // Determine the maximum value in the dataset for dynamic step sizing
-        var allTaxData = [...statePensionTaxes, ...dbPensionTaxes, ...pensionWithdrawalTaxes];
+        // Determine max for dynamic step size
+        var allTaxData = [
+            ...statePensionTaxes,
+            ...dbPensionTaxes,
+            ...pensionWithdrawalTaxes,
+            ...annuityTaxes,
+            ...otherIncomeTaxes
+        ];
         var maxValue = Math.max(...allTaxData);
-        var stepSize = calculateStepSizeTax(maxValue); // Renamed function
+        var stepSize = calculateStepSizeTax(maxValue);
     
-        // Create the new chart using Chart.js
+        // Create the new chart
         window.myTaxChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -4208,6 +4201,11 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                         label: 'Pension Withdrawal Tax',
                         data: pensionWithdrawalTaxes,
                         backgroundColor: '#2196F3' // Blue
+                    },
+                    {
+                        label: 'Other Income Tax',
+                        data: otherIncomeTaxes,
+                        backgroundColor: '#FFB74D' // Light orange
                     }
                 ]
             },
@@ -4229,13 +4227,13 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                         stacked: true,
                         title: {
                             display: true,
-                            text: '' // Removed (£) symbol
+                            text: ''
                         },
                         beginAtZero: true,
                         ticks: {
-                            stepSize: stepSize, // Use the calculated step size
-                            maxTicksLimit: 8, // Limit the number of ticks to 8 for clarity
-                            callback: function(value, index, ticks) {
+                            stepSize: stepSize,
+                            maxTicksLimit: 8,
+                            callback: function(value) {
                                 return '£' + formatYAxisLabels(value, 'k');
                             }
                         }
@@ -4245,8 +4243,8 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                     title: {
                         display: true,
                         text: [
-                            heading, 
-                            `Total Tax Over All Ages: ${formatNumber(totalTax, 'currency')}`
+                            heading,
+                            `Total Tax Over All Ages: £${formatNumber(totalTax, 'currency')}`
                         ],
                         font: {
                             size: headingFontSize,
@@ -4256,7 +4254,7 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                         padding: {
                             top: 5,
                             bottom: 5
-                        },
+                        }
                     },
                     legend: {
                         display: true,
@@ -4264,7 +4262,6 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                     },
                     tooltip: {
                         callbacks: {
-                            // Display individual dataset values with £ and k
                             label: function(context) {
                                 var label = context.dataset.label || '';
                                 if (label) {
@@ -4275,7 +4272,6 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
                                 }
                                 return label;
                             },
-                            // Display the total amount in the footer with £ and k
                             footer: function(context) {
                                 var total = context.reduce((sum, item) => sum + item.parsed.y, 0);
                                 return 'Total: £' + formatYAxisLabels(total, 'k');
@@ -4286,16 +4282,15 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
             }
         });
     
-      
         function formatYAxisLabels(value, formatType) {
             if (formatType === 'k') {
-                if (value >= 10000) { // Only add 'k' for values >= £10,000
-                    return (value / 1000).toFixed(0) + 'k'; // e.g., 25000 => 25.0k
+                if (value >= 10000) {
+                    return (value / 1000).toFixed(0) + 'k';
                 }
-                return new Intl.NumberFormat('en-GB').format(value); // e.g., 5000 => 5,000
+                return new Intl.NumberFormat('en-GB').format(value);
             } else if (formatType === 'm') {
                 if (value >= 1000000) {
-                    return (value / 1000000).toFixed(2) + 'm'; // e.g., 2500000 => 2.50m
+                    return (value / 1000000).toFixed(2) + 'm';
                 }
                 return formatYAxisLabels(value, 'k');
             } else if (formatType === 'number') {
@@ -4305,18 +4300,15 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
             }
         }
     
-      
         function calculateStepSizeTax(maxValue) {
-            if (maxValue <= 10000) return 500; // £5k
-            if (maxValue <= 25000) return 5000; // £5k
-            if (maxValue <= 100000) return 10000; // £10k
-            if (maxValue <= 250000) return 25000; // £25k
-            if (maxValue <= 500000) return 50000; // £50k
-            if (maxValue <= 1000000) return 100000; // £100k
-            return 250000; // £250k for very high values
+            if (maxValue <= 10000) return 500;
+            if (maxValue <= 25000) return 5000;
+            if (maxValue <= 100000) return 10000;
+            if (maxValue <= 250000) return 25000;
+            if (maxValue <= 500000) return 50000;
+            if (maxValue <= 1000000) return 100000;
+            return 250000;
         }
-
-        //return totalTax;
     }
 
     
@@ -4671,23 +4663,15 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
             retirementIncomeContainer.classList.remove("hidden");
             retirementIncomeContainer.classList.add("visible");
             saveAndCalc();
-        } else if (selectedTable === "yourPensionFundCashflow") {
+        } else if (selectedTable === "yourPensionFundCashflow" || selectedTable === "partnerPensionFundCashflow" || selectedTable === "pensionFundCashflow") {
             pensionFundCashflowContainer.classList.remove("hidden");
             pensionFundCashflowContainer.classList.add("visible");
             saveAndCalc('Your');
-        } else if (selectedTable === "partnerPensionFundCashflow") {
-            pensionFundCashflowContainer.classList.remove("hidden");
-            pensionFundCashflowContainer.classList.add("visible");
-            saveAndCalc('Partner');
-       
-        } else if (selectedTable === "yourISACashflow") {
+        } else if (selectedTable === "yourISACashflow" || selectedTable === "partnerISACashflow" || selectedTable === "ISACashflow") {
             ISACashflowContainer.classList.remove("hidden");
             ISACashflowContainer.classList.add("visible");
             saveAndCalc('Your');
-        } else if (selectedTable === "partnerISACashflow") {
-            ISACashflowContainer.classList.remove("hidden");
-            ISACashflowContainer.classList.add("visible");
-            saveAndCalc('Partner');
+        
            
         } else if (selectedTable === "yourRetirementIncome") {
             retirementIncomeContainer.classList.remove("hidden");
@@ -4871,10 +4855,16 @@ function displayRetirementIncomeCashFlowTable(retirementIncomeData, retirementAg
         tr.appendChild(tdPensionFundIncome);
 
          // 9. Total Taxable Income
-         var totalGrossIncome = Math.floor(row.statePensionInPayment) + Math.floor(row.dbPensionInPayment) + Math.floor(row.grossPensionWithdrawal) + Math.floor(row.annuityNet);
+        /*  var totalGrossIncome = Math.floor(row.statePensionInPayment) + Math.floor(row.dbPensionInPayment) + Math.floor(row.grossPensionWithdrawal) + Math.floor(row.annuityNet);
          var tdTotalGrossIncome = document.createElement('td');
          tdTotalGrossIncome.textContent = '£' + formatNumber(Math.floor(totalGrossIncome || 0));
-         tr.appendChild(tdTotalGrossIncome);
+         tr.appendChild(tdTotalGrossIncome); */
+
+         // Gross Other Income
+         var otherIncomeGross = Math.floor(row.otherIncomeNet) + Math.floor(row.otherIncomeTax) ;
+         var tdOtherIncomeGross = document.createElement('td');
+         tdOtherIncomeGross.textContent = '£' + formatNumber(Math.floor(otherIncomeGross || 0));
+         tr.appendChild(tdOtherIncomeGross);
 
         // 3. Net State Pension
         var tdTaxStatePension = document.createElement('td');
@@ -4899,10 +4889,15 @@ function displayRetirementIncomeCashFlowTable(retirementIncomeData, retirementAg
       
 
         // 10. Total Tax Paid
-        var totalTaxPaid = Math.floor(row.statePensionTax) + Math.floor(row.dbPensionTax) + Math.floor(row.taxPaid) + Math.floor(row.annuityTax);
+     /*    var totalTaxPaid = Math.floor(row.statePensionTax) + Math.floor(row.dbPensionTax) + Math.floor(row.taxPaid) + Math.floor(row.annuityTax);
         var tdTotalTaxPaid = document.createElement('td');
         tdTotalTaxPaid.textContent = '£' + formatNumber(Math.floor(totalTaxPaid || 0));
-        tr.appendChild(tdTotalTaxPaid);
+        tr.appendChild(tdTotalTaxPaid); */
+
+        // Net Other Income
+        var tdOtherIncomeNet = document.createElement('td');
+        tdOtherIncomeNet.textContent = '£' + formatNumber(Math.floor(row.otherIncomeNet || 0));
+         tr.appendChild(tdOtherIncomeNet);
 
         // 8. ISA Withdrawals
         var tdISAWithdrawals = document.createElement('td');
