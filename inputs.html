@@ -618,14 +618,14 @@
                                                            oninput="updateOutput('dbPensionAmountPhone', this.value)">
                                             
                                                     <!-- Plus Button -->
-                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1" 
+                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1 me-3" 
                                                             onclick="adjustOutputBox('dbPensionAmountPhone', 50)" 
                                                             type="button" aria-label="Increase">
                                                         <i class="bi bi-plus"></i>
                                                     </button>
                                             
                                                     <!-- Output Box -->
-                                                    <output id="dbPensionAmountPhone" class="form-control text-end ms-3" 
+                                                    <output id="dbPensionAmountPhone" class="form-control text-end ms-4" 
                                                             style="width: 22%; font-size: 0.9rem; font-weight: bold; color: #007bff; overflow: hidden;">
                                                         0
                                                     </output>
@@ -657,7 +657,7 @@
                                                            oninput="updateOutput('dbPensionAgePhone', this.value)">
                                             
                                                     <!-- Plus Button -->
-                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1" 
+                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1 me-5" 
                                                             onclick="adjustOutputBox('dbPensionAgePhone', 1)" 
                                                             type="button" aria-label="Increase">
                                                         <i class="bi bi-plus"></i>
@@ -1093,40 +1093,82 @@
                                                 If your partner has a guaranteed pension payable from a certain age, add details here. The annual pension entered should be the amount that your partner will be entitled to start receiving at their scheme's normal retirement age.
                                             </p>
 
-                                            <!-- Annual Pension -->
-                                            <div class="mb-4 mt-4">
+                                            <!-- Partner Annual Pension -->
+                                            <div class="mb-4 me-1">
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <label for="partnerAnnualPensionSlider" class="form-label mb-0 me-3" style="width: 30%; font-size: 0.9rem;">
+                                                    <!-- Label -->
+                                                    <label for="partnerAnnualPensionSlider" class="form-label mb-0 me-3" style="width: 45%; font-size: 0.9rem;">
                                                         <strong>Annual Pension</strong>
                                                     </label>
-                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button me-1" onclick="adjustOutputBox('partnerDbPensionAmountPhone', -50)" type="button" aria-label="Decrease">
+
+                                                    <!-- Minus Button -->
+                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button me-1"
+                                                            onclick="adjustOutputBox('partnerDbPensionAmountPhone', -50)"
+                                                            type="button" aria-label="Decrease">
                                                         <i class="bi bi-dash"></i>
                                                     </button>
-                                                    <input type="range" class="form-range" style="width: 25%;" id="partnerAnnualPensionSlider" min="0" max="100000" step="500" value="0" oninput="updateOutput('partnerDbPensionAmountPhone', this.value)">
-                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1" onclick="adjustOutputBox('partnerDbPensionAmountPhone', 50)" type="button" aria-label="Increase">
+
+                                                    <!-- Slider -->
+                                                    <input type="range" class="form-range"
+                                                        style="width: 30%;"
+                                                        id="partnerAnnualPensionSlider"
+                                                        min="0" max="100000" step="500" value="0"
+                                                        oninput="updateOutput('partnerDbPensionAmountPhone', this.value)">
+
+                                                    <!-- Plus Button -->
+                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1 me-3"
+                                                            onclick="adjustOutputBox('partnerDbPensionAmountPhone', 50)"
+                                                            type="button" aria-label="Increase">
                                                         <i class="bi bi-plus"></i>
                                                     </button>
-                                                    <output id="partnerDbPensionAmountPhone" class="form-control text-end ms-3" style="width: 20%; font-size: 0.9rem; font-weight: bold; color: #007bff;">0</output>
-                                                </div>
-                                            </div>
-                            
-                                            <!-- Normal Retirement Age -->
-                                            <div class="mb-4">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <label for="partnerDbRetirementAgeSlider" class="form-label mb-0 me-3" style="width: 35%; font-size: 0.9rem;">
-                                                        <strong>Normal Retirement Age</strong>
-                                                    </label>
-                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button me-1" onclick="adjustOutputBox('partnerDbRetirementAgePhone', -1)" type="button" aria-label="Decrease">
-                                                        <i class="bi bi-dash"></i>
-                                                    </button>
-                                                    <input type="range" class="form-range" style="width: 25%;" id="partnerDbRetirementAgeSlider" min="50" max="75" step="1" value="65" oninput="updateOutput('partnerDbRetirementAgePhone', this.value)">
-                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1" onclick="adjustOutputBox('partnerDbRetirementAgePhone', 1)" type="button" aria-label="Increase">
-                                                        <i class="bi bi-plus"></i>
-                                                    </button>
-                                                    <output id="partnerDbRetirementAgePhone" class="form-control text-end ms-5" style="width: 10%; font-size: 0.9rem; font-weight: bold; color: #007bff;">65</output>
+
+                                                    <!-- Output Box -->
+                                                    <output id="partnerDbPensionAmountPhone" class="form-control text-end ms-4"
+                                                            style="width: 22%; font-size: 0.9rem; font-weight: bold; color: #007bff; overflow: hidden;">
+                                                        0
+                                                    </output>
                                                 </div>
                                             </div>
 
+                                            <!-- Partner Normal Retirement Age -->
+                                            
+                                            <div class="mb-4 me-1">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <!-- Label -->
+                                                    <label for="partnerDbRetirementAgeSlider" class="form-label mb-0 me-3" style="width: 45%; font-size: 0.9rem;">
+                                                        <strong>Normal Retirement Age</strong>
+                                                    </label>
+
+                                                    <!-- Minus Button -->
+                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button me-1"
+                                                            onclick="adjustOutputBox('partnerDbRetirementAgePhone', -1)"
+                                                            type="button" aria-label="Decrease">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+
+                                                    <!-- Slider -->
+                                                    <input type="range" class="form-range"
+                                                        style="width: 30%;"
+                                                        id="partnerDbRetirementAgeSlider"
+                                                        min="50" max="75" step="1" value="65"
+                                                        oninput="updateOutput('partnerDbRetirementAgePhone', this.value)">
+
+                                                    <!-- Plus Button -->
+                                                    <button class="btn btn-outline-secondary btn-sm rounded-circle custom-circle-button ms-1 me-3"
+                                                            onclick="adjustOutputBox('partnerDbRetirementAgePhone', 1)"
+                                                            type="button" aria-label="Increase">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+
+                                                    <!-- Output Box -->
+                                                    <output id="partnerDbRetirementAgePhone" class="form-control text-end ms-4"
+                                                            style="width: 22%; font-size: 0.9rem; font-weight: bold; color: #007bff; overflow: hidden;">
+                                                        65
+                                                    </output>
+                                                </div>
+                                            </div>
+
+                                            
                                             
                             
                                             <!-- Add Additional Fields if Needed -->
