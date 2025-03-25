@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     togglePartnerInputs(planAsCoupleSwitch);
     
-    
+    saveAndCalc();
     
 });
 
@@ -1329,11 +1329,7 @@ function togglePartnerInputs(checkbox) {
     localStorage.setItem('planAsCouple', isPlanAsCouple);
 
     updateDropdowns(isPlanAsCouple);
-    
-
-    // 7. Recalculate or refresh
-    saveAndCalc();
-
+   
    
 }
 
@@ -1907,7 +1903,7 @@ function setupSliderListeners() {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
                     saveAndCalc();
-                    //updateChartVisibility('notDropDown');
+                    
                 }, debounceDelay);
             });
         }
@@ -2417,7 +2413,7 @@ setupSliderListeners();
     
             // Optional: Trigger calculation or any dependent logic
             saveAndCalc();
-            //updateChartVisibility('notDropDown');
+            
         }
     }
     
@@ -4607,39 +4603,64 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
         if (selectedChart === "Fund") {
             applyInflationAdjustmentPhone.checked = false;
             fundChartContainer.classList.remove("hidden");
-            saveAndCalc();
+            if (source === 'onDropDown') {
+                saveAndCalc();
+            }
+            
         } else if (selectedChart === "Income") {
             incomeChartContainer.classList.remove("hidden");
-            saveAndCalc();
+            if (source === 'onDropDown') {
+                saveAndCalc();
+            }
         } else if (selectedChart === "Your") {
             incomeChartContainer.classList.remove("hidden");
-            saveAndCalc('Your');
+            if (source === 'onDropDown') {
+                saveAndCalc('Your');
+            }
+            
         } else if (selectedChart === "Partner") {
             incomeChartContainer.classList.remove("hidden");
-            saveAndCalc('Partner');
+            if (source === 'onDropDown') {
+                saveAndCalc('Partner');
+            }
+            
         } else if (selectedChart === "Tax") {
             taxBySourceChartContainer.classList.remove("hidden");
-            saveAndCalc();
+            if (source === 'onDropDown') {
+                saveAndCalc();
+            }
         } else if (selectedChart === "Charges") {
             chargesChartContainer.classList.remove("hidden");
-            saveAndCalc();
+            if (source === 'onDropDown') {
+                saveAndCalc();
+            }
         } else if (selectedChart === "TFC") {
             TFCChartContainer.classList.remove("hidden");
-            saveAndCalc();
+            if (source === 'onDropDown') {
+                saveAndCalc();
+            }
         } else if (selectedChart === "TaxBand") { 
             taxBandChartContainer.classList.remove("hidden");
-            saveAndCalc();
+            if (source === 'onDropDown') {
+                saveAndCalc();
+            }
         } else if (selectedChart === "YourTax") { 
             taxBandChartContainer.classList.remove("hidden");
-            saveAndCalc('YourTax');
+            if (source === 'onDropDown') {
+                saveAndCalc('YourTax');
+            }
+            
         } else if (selectedChart === "PartnerTax") { 
             taxBandChartContainer.classList.remove("hidden");
-            saveAndCalc('PartnerTax');
+            if (source === 'onDropDown') {
+                saveAndCalc('PartnerTax');
+            }
+            
         }
     }
     
     
-    function updateTableVisibility() {
+    function updateTableVisibility(source) {
         // Get the selected value from the dropdown
         const selectedTable = document.getElementById("tableSelector").value;
     
@@ -4662,25 +4683,39 @@ function plotFundChart(cashFlowData, phoneFormat, planAsCouple) {
         if (selectedTable === "retirementIncome") {
             retirementIncomeContainer.classList.remove("hidden");
             retirementIncomeContainer.classList.add("visible");
-            saveAndCalc();
+            if (source === 'onDropDown') {
+                saveAndCalc();
+            }
+            
         } else if (selectedTable === "yourPensionFundCashflow" || selectedTable === "partnerPensionFundCashflow" || selectedTable === "pensionFundCashflow") {
             pensionFundCashflowContainer.classList.remove("hidden");
             pensionFundCashflowContainer.classList.add("visible");
-            saveAndCalc('Your');
+            if (source === 'onDropDown') {
+                saveAndCalc('Your');
+            }
+            
         } else if (selectedTable === "yourISACashflow" || selectedTable === "partnerISACashflow" || selectedTable === "ISACashflow") {
             ISACashflowContainer.classList.remove("hidden");
             ISACashflowContainer.classList.add("visible");
-            saveAndCalc('Your');
+            if (source === 'onDropDown') {
+                saveAndCalc('Your');
+            }
+            
         
            
         } else if (selectedTable === "yourRetirementIncome") {
             retirementIncomeContainer.classList.remove("hidden");
             retirementIncomeContainer.classList.add("visible");
-            saveAndCalc('Your');
+            if (source === 'onDropDown') {
+                saveAndCalc('Your');
+            }
         } else if (selectedTable === "partnerRetirementIncome") {
             retirementIncomeContainer.classList.remove("hidden");
             retirementIncomeContainer.classList.add("visible");
-            saveAndCalc('Partner');
+            if (source === 'onDropDown') {
+                saveAndCalc('Partner');
+            }
+            
         } 
         
     
